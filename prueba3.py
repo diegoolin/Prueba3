@@ -1,4 +1,5 @@
-def menu1(f,r,datos): 
+def menu1(f,r,datos):
+#Para Casos Nuevos     
     regionn = 1
     stop1 = True
     while stop1:
@@ -29,8 +30,7 @@ def menu1(f,r,datos):
     datos += ("Casos covid en la fecha", str(casosnuevoslista[regionn][posicionfecha]))
     datos += ("Total a nivel pais",total)
     
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-    #pacientes UCI
+#Para UCI
     regionn = 1
     stop1 = True
     while stop1:
@@ -59,8 +59,8 @@ def menu1(f,r,datos):
 
     datos += ("Pacientes UCI en la fecha es:", str(ucilista[regionn][2+posicionfecha]))
     datos += ("El total de pacientes UCI a nivel pais es:", str(total))
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-    #examenes PCR
+
+#Para PCR
     regionn = 1
     stop1 = True
     while stop1:
@@ -91,11 +91,7 @@ def menu1(f,r,datos):
     datos += ("El total de examenes PCR a nivel pais es:", str(total))
     datos += ("El total de examenes PCR a nivel pais es:", str(total))
     return datos
-def menu2(f,r):
-    """Comparar la cantidad de personas COVID positivos, pacientes en UCI y cantidad de examenes
-    PCR en un dia determinado con el mismo dia del añoo pasado (si se tiene la informacion). Esta
-    informacion sera para alguna region en particular y a nivel pais."""   
-
+def menu2(f,r): 
     fechafinal = []
 
     fechafinal.append(f[0:4])
@@ -109,6 +105,7 @@ def menu2(f,r):
     fechafinal[0] = str(año)
     añopasado = "-".join(fechafinal)
 
+#Años anteriores Casos nuevos
     if f in casosnuevoslista[0]:
         regionn=1
         stop1=True
@@ -159,8 +156,7 @@ def menu2(f,r):
         print("La informacion de pacientes Casos positivos de esta fecha del año pasado no existe")
         print()
 
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-    #pacientes UCI
+#Años anteriores UCI
     if f in ucilista[0]:
         regionn=1
         stop1=True
@@ -187,7 +183,6 @@ def menu2(f,r):
     else:
         print("La informacion de pacientes UCI de esa fecha no existe")
         
-#------------------------------------------------------------------------------------------------------------------------------------------------------
 
     if añopasado in ucilista[0]:
         posicionfecha = ucilista[0].index(añopasado)
@@ -210,8 +205,7 @@ def menu2(f,r):
         print("La informacion de esta fecha del año pasado no existe")
         print()
     
-#------------------------------------------------------------------------------------------------------------------------------------------------------
-    #examenes PCR
+#Años anteriores PCR
     if f in pcrlista[0]:
         regionn=1
         stop1=True
@@ -243,7 +237,6 @@ def menu2(f,r):
     else:
         print("La informacion de PCR de esa fecha no existe")
         
-#------------------------------------------------------------------------------------------------------------------------------------------------------
 
     if añopasado in pcrlista[0]:
         posicionfecha = pcrlista[0].index(añopasado)
@@ -265,6 +258,261 @@ def menu2(f,r):
         print()
     else:
         print("la informacion de examenes covid de esa fecha en el año pasado no existe")
+
+def menu3(f, r):
+    regionn=1
+    stop1=True
+    while stop1:
+        if r==casosnuevoslista[regionn][0]:
+            stop1=False
+        else:
+            regionn+=1
+    if f in casosnuevoslista[0]:    
+        posicionfecha=casosnuevoslista[0].index(f)
+        a=int(casosnuevoslista[regionn][posicionfecha])
+        regionn=1
+        stop1=True
+        while stop1:
+            if r==pcrlista[regionn][0]:
+                stop1=False
+            else:
+                regionn+=1
+        if f in pcrlista[0]:
+            posicionfecha=pcrlista[0].index(f)
+            
+            b=int(pcrlista[regionn][posicionfecha])
+            print()
+            print("La tasa de positividad para la fecha",f,"fue del",a/b,"%")
+        else:
+            print("no existe examenes pcr en esa fecha no se puede determinar la tasa de positividad")
+    else:
+        print("no existe esta informacion")                             
+
+def menu4(f,r):
+    casosnuevos= open("Casos-nuevos-totales-por-region.txt", "r")
+
+    linea = casosnuevos.readline()
+    casosnuevoslista = []
+    while linea != "":
+        casosnuevoslista.append(linea.split(","))
+        linea = casosnuevos.readline()
+
+    fechafinal = []
+
+    fechafinal.append(f[0:4])
+    fechafinal.append(f[5:7])
+#Para 31 dias
+    if fechafinal[1] == "03":
+        fechafinal.append("03")
+        fechafinal ="-".join(fechafinal)
+        regionn=1
+        stop1=True
+        while stop1:
+            if r==casosnuevoslista[regionn][0]:
+                stop1=False
+            else:
+                regionn+=1               
+        posicionfecha=casosnuevoslista[0].index(fechafinal)
+
+        stop1=True
+        total= 0
+        i=posicionfecha
+        while stop1:
+            total+= int(casosnuevoslista[regionn][i])
+            i+=1
+            if i >= posicionfecha+28:
+                stop1=False
+        print("La tasa de positividad en la region",r,"durante el mes fue de", total/31,"\n")
+
+        posicionfecha=casosnuevoslista[0].index(fechafinal)
+        stop1=True
+        total=0
+        i=posicionfecha
+        regionn=1
+        while stop1:
+            total+=int(casosnuevoslista[regionn][i])
+            i += 1
+            if i >=posicionfecha+29:
+                i=posicionfecha
+                regionn+=1
+            if regionn>= len(casosnuevoslista)-1:
+                stop1=False
+        print("La tasa de positividad total durante el mes a nivel país fue de", total/31,"\n")
+
+#Meses 31 dias
+    if fechafinal[1] == "01" or fechafinal[1] == "05" or fechafinal[1] == "07" or fechafinal[1] == "08" or fechafinal[1] == "10" or fechafinal[1] == "12":
+        fechafinal.append("01")
+        fechafinal="-".join(fechafinal)
+        regionn=1
+        stop1=True
+        while stop1:
+            if r==casosnuevoslista[regionn][0]:
+                stop1=False
+            else:
+                regionn+=1
+        posicionfecha=casosnuevoslista[0].index(fechafinal)
+        stop1=True
+        total=0
+        i=posicionfecha
+        while stop1:
+            total+=int(casosnuevoslista[regionn][i])
+            i+=1
+            if i >= posicionfecha+31:
+                stop1=False
+        print("La tasa de positividad en la región durante el mes fue de", total/31,"\n")
+
+        posicionfecha=casosnuevoslista[0].index(fechafinal)
+        stop1=True
+        total=0
+        i=posicionfecha
+        regionn=1
+        while stop1:
+            total+=int(casosnuevoslista[regionn][i])
+            i += 1
+            if i >=posicionfecha+31:
+                i =posicionfecha
+                regionn+=1
+            if regionn>= len(casosnuevoslista)-1:
+                stop1=False
+        print("La tasa de positividad total nivel país fue de",total/31)
+
+#Meses 30 dias
+    if fechafinal[1] == "04" or fechafinal[1] == "06" or fechafinal[1] == "09" or fechafinal[1] == "11":
+        fechafinal.append("01")
+        fechafinal="-".join(fechafinal)
+        regionn=1
+        stop1=True
+        while stop1:
+            if r==casosnuevoslista[regionn][0]:
+                stop1=False
+            else:
+                regionn+=1
+                
+        posicionfecha=casosnuevoslista[0].index(fechafinal)
+        stop1=True
+        total=0
+        i=posicionfecha
+        while stop1:
+            total+=int(casosnuevoslista[regionn][i])
+            i += 1
+            if i >=posicionfecha+30:
+                stop1=False
+        print("La tasa de positividad en la región durante el mes fue de",total/30)
+
+        posicionfecha=casosnuevoslista[0].index(fechafinal)
+        stop1=True
+        total=0
+        i=posicionfecha
+        regionn=1
+        while stop1:
+            total+=int(casosnuevoslista[regionn][i])
+            i += 1
+            if i >=posicionfecha+30:
+                i=posicionfecha
+                regionn+=1
+            if regionn>= len(casosnuevoslista)-1:
+                stop1=False
+        print("La tasa de positividad total nivel país fue de",total/30)
+
+#Meses de 28 dias
+    if fechafinal[1] == "02":
+        fechafinal.append("01")
+        fechafinal ="-".join(fechafinal)
+
+        regionn=1
+        stop1=True
+        while stop1:
+            if r==casosnuevoslista[regionn][0]:
+                stop1=False
+            else:
+                regionn+=1
+        posicionfecha=casosnuevoslista[0].index(fechafinal)
+        stop1=True
+        total=0
+        i =posicionfecha
+        while stop1:
+            total+=int(casosnuevoslista[regionn][i])
+            i += 1
+            if i >=posicionfecha+28:
+                stop1=False
+        print("La tasa de positividad en la región durante el mes fue de",total/28)
+
+        posicionfecha=casosnuevoslista[0].index(fechafinal)
+        stop1=True
+        total=0
+        i=posicionfecha
+        regionn=1
+        while stop1:
+            total+=int(casosnuevoslista[regionn][i])
+            i += 1
+            if i >=posicionfecha+28:
+                i =posicionfecha
+                regionn+=1
+            if regionn>= len(casosnuevoslista)-1:
+                stop1=False
+        print("tasa de positividad total nivel pais fue de",total/28)
+
+def menu5(r):  
+    regionn=1
+    stop1=True
+    while stop1:
+        if r==casosnuevoslista[regionn][0]:
+            stop1=False
+        else:
+            regionn+=1
+  
+    stop1=True
+    total= 0
+    i=1
+    j=1
+    while stop1:
+        total+= int(casosnuevoslista[regionn][j])       
+        j+=1
+        if j > len(casosnuevoslista[regionn])-1:
+            stop1=False
+    print("la relacion de la region de ", r, "es de", int(ucilista[regionn][2])//total," es a 1")
+     
+    stop1=True
+    total=0
+    r=1
+    j=1
+    promedios=[]
+    posicionpromedios=[]
+    while r!= len(casosnuevoslista)-1:
+        stop1=True
+        while stop1:
+            total+= int(casosnuevoslista[r][j])
+            j+=1
+            if j==len(casosnuevoslista[r]):
+                stop1=False
+                j=1
+                posicionpromedios.append([int(ucilista[r][2])//total,r])
+
+                promedios.append(int(ucilista[r][2])//total)
+                r+=1
+                total=0   
+
+    posicionpromedios.sort(reverse=True)
+
+    promedios.sort(reverse=True)
+
+    sumapromedios = sum(promedios)
+
+    i = 0
+
+    while i < len(promedios):
+        if posicionpromedios[i][0] > sumapromedios:
+            print()
+            print("mayor al promedio")
+        if posicionpromedios[i][0] == sumapromedios:
+            print()
+            print("estan en el promedio")
+        if posicionpromedios[i][0]< sumapromedios:
+            print()
+            print("menor al promedio")
+        print("la relacion en la region" ,casosnuevoslista[posicionpromedios[i][1]][0],"es de", posicionpromedios[i][0]," es a 1")  
+        i +=1
+    print()
 
 
 
@@ -295,7 +543,7 @@ pcrlista= []
 while linea != "":
     pcrlista.append(linea.split(","))
     linea = pcr.readline()
-    linea.replace("\n", "")
+    linea.replace("\n","")
 pcr.close()
 
 
@@ -315,3 +563,18 @@ while fin:
         r=input("ingrese Region (por nombre):")
         dos=menu2(f,r)
         menu=int(input("1\n2\n3\n4\n5\n6\n7\n8\n9\nOpcion:"))
+    if menu==3:
+        f=input("ingrese la fecha:")
+        r=input("ingrese Region (por nombre):")
+        tres=menu3(f,r)
+        menu=int(input("1\n2\n3\n4\n5\n6\n7\n8\n9\nOpcion:"))
+    if menu==4:
+        f=input("ingrese año y mes:")
+        r=input("ingrese Region (por nombre):")
+        cuatro=menu4(f,r)
+        menu=int(input("1\n2\n3\n4\n5\n6\n7\n8\n9\nOpcion:"))
+    if menu==5:
+        r=input("ingrese Region (por nombre):")
+        cinco=menu5(r)
+        menu=int(input("1\n2\n3\n4\n5\n6\n7\n8\n9\nOpcion:"))
+
